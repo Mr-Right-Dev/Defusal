@@ -20,4 +20,7 @@ Componentes adicionais:
 
 Como montar:
 <img width="1217" height="752" alt="image" src="https://github.com/user-attachments/assets/311d74a8-54b8-49f7-be06-24d9b6fb7d72" />
+
+PDF do esquema:
 [Defusal.pdf](https://github.com/user-attachments/files/22867185/Defusal.pdf)
+
