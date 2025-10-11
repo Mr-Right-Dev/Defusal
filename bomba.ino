@@ -172,6 +172,8 @@ const byte* numbers[] = {
   nine
 };
 
+
+
 const byte PINOS_LINHAS[LINHAS] = { 13, 12, 11, 10 };  // Pinos de conexao com as linhas do teclado
 const byte PINOS_COLUNAS[COLUNAS] = { 9, 8, 7, 6 };    // Pinos de conexao com as colunas do teclado
 
