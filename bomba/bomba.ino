@@ -159,32 +159,6 @@ byte block[8] = {
   0b00000
 };
 
-const char* conversion1[] = {
-  '0',
-  '3',
-  '6',
-  '9',
-  '2',
-  '5',
-  '8',
-  '1',
-  '4',
-  '7'
-};
-
-const char* conversion2[] = {
-  '0',
-  '7',
-  '5',
-  '1',
-  '8',
-  '5',
-  '2',
-  '9',
-  '6',
-  '3'
-};
-
 const byte* numbers[] = {
   zero,
   one,
@@ -623,34 +597,46 @@ void clues() {
 
   if (choices[1] == 1) {
     disableGreTask.update();
-    int Digit = int(passwordchar[1]) - '0';
+    int Digit = int(passwordchar[1]);
+    int targetBlink = Digit * 3;
+    char result[3];
+    String encryptedTxt = String(targetBlink);
+    encryptedTxt.toCharArray(result, 3);
     String temp = String(time.seco);
-    if (conversion1[Digit] == temp.charAt(temp.length() - 1)) {
+    if (result[encryptedTxt.length() - 1] == temp.charAt(temp.length() - 1)) {
       if (global_pressed) {
-        lcd.setCursor(16, 1);
+        lcd.setCursor(15, 1);
         lcd.write(byte(7));
+        digitalWrite(GRE_PIN, HIGH);
+        disableGreTask.enable();
       } else {
-        lcd.setCursor(16, 1);
+        lcd.setCursor(15, 1);
         lcd.print(" ");
       }
     } else {
-      lcd.setCursor(16, 1);
+      lcd.setCursor(15, 1);
       lcd.print(" ");
     }
   } else {
     disableGreTask.update();
-    int Digit = int(passwordchar[1]) - '0';
+    int Digit = int(passwordchar[1]);
+    int targetBlink = Digit * 7;
+    char result[3];
+    String encryptedTxt = String(targetBlink);
+    encryptedTxt.toCharArray(result, 4);
     String temp = String(time.seco);
-    if (conversion2[Digit] == temp.charAt(temp.length() - 1)) {
+    if (result[encryptedTxt.length() - 1] == temp.charAt(temp.length() - 1)) {
       if (global_pressed) {
-        lcd.setCursor(16, 1);
+        lcd.setCursor(15, 1);
         lcd.write(byte(7));
+        digitalWrite(GRE_PIN, HIGH);
+        disableGreTask.enable();
       } else {
-        lcd.setCursor(16, 1);
+        lcd.setCursor(15, 1);
         lcd.print(" ");
       }
     } else {
-      lcd.setCursor(16, 1);
+      lcd.setCursor(15, 1);
       lcd.print(" ");
     }
   }
@@ -669,18 +655,6 @@ void active_loop() {
 
   switch (selected_dif) {
     case Easy:
-      easy_clue();
-      break;
-    
-    case Normal:
-      normal_clue();
-      break;
-
-    case Hard:
-      hard_clue();
-      break;
-
-    default:
       easy_clue();
       break;
   }
