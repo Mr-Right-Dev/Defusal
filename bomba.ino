@@ -159,7 +159,7 @@ byte block[8] = {
   0b00000
 };
 
-const char* conversion1[] = {
+const char conversion1[] = {
   '0',
   '3',
   '6',
@@ -172,7 +172,7 @@ const char* conversion1[] = {
   '7'
 };
 
-const char* conversion2[] = {
+const char conversion2[] = {
   '0',
   '7',
   '5',
@@ -198,14 +198,6 @@ const byte* numbers[] = {
   nine
 };
 
-
-
-const byte PINOS_LINHAS[LINHAS] = { 13, 12, 11, 10 };  // Pinos de conexao com as linhas do teclado
-const byte PINOS_COLUNAS[COLUNAS] = { 9, 8, 7, 6 };    // Pinos de conexao com as colunas do teclado
-
-LiquidCrystal_I2C lcd(lcd_Add, 16, 2);
-Keypad keypad = Keypad(makeKeymap(TECLAS_MATRIZ), PINOS_LINHAS, PINOS_COLUNAS, LINHAS, COLUNAS);  //
-
 enum bomb_state {
   mode_selection,
   active,
@@ -213,16 +205,18 @@ enum bomb_state {
   disarmed
 };
 
+enum bomb_state state = mode_selection;
+
+const byte PINOS_LINHAS[LINHAS] = { 13, 12, 11, 10 };  // Pinos de conexao com as linhas do teclado
+const byte PINOS_COLUNAS[COLUNAS] = { 9, 8, 7, 6 };    // Pinos de conexao com as colunas do teclado
+
+LiquidCrystal_I2C lcd(lcd_Add, 16, 2);
+Keypad keypad = Keypad(makeKeymap(TECLAS_MATRIZ), PINOS_LINHAS, PINOS_COLUNAS, LINHAS, COLUNAS);  //
+
 enum difficulty {
   Easy,
   Normal,
   Hard
-};
-
-const char* difficultys[] = {
-  "Fácil",
-  "Normal",
-  "Difícil"
 };
 
 bool global_pressed = false;
@@ -234,7 +228,7 @@ String master_password = "14293255";
 String inputed_password = "";
 
 enum difficulty selected_dif = Easy;
-enum bomb_state state = mode_selection;
+
 bool global_debounce = false;
 
 int* choices[] = { 0, 0, 0, 0, 0 };
@@ -259,6 +253,8 @@ private:
     } else {
       lcd.print(String(minu) + ":" + secStr + "    " + String(speed, 2) + "x");
     }
+    lcd.setCursor(15,0);
+    lcd.print();
   }
 
   void tickent() {
@@ -266,6 +262,9 @@ private:
     if (seco <= 0) {
       minu -= 1;
       seco = 59;
+    }
+    if (seco <= 0 && minu <= 0) {
+
     }
     display();
   }
@@ -329,14 +328,14 @@ public:
 
 Timer time = Timer(10, 10);
 
-
-
 void generate_password() {
-  for (int i = 0; i < 2; i++) {
+  password = "";
+  for (int i = 0; i < 3; i++) {
     int choice = random(0, 9);
     password += choice;
     passwordchar[i] = choice;
   }
+  Serial.println(password);
 }
 
 void reboot() {
@@ -345,17 +344,22 @@ void reboot() {
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Dificuldade: ");
-  lcd.setCursor(0, 1);
-  lcd.print("Facil");
+  
   randomSeed(analogRead(0));
   time = Timer(3, 30);
   selected_dif = Easy;
   digitalWrite(RED_PIN, LOW);
   digitalWrite(GRE_PIN, HIGH);
   digitalWrite(YEL_PIN, LOW);
+  delay(100);
+  lcd.setCursor(0, 1);
+  lcd.print("Facil");
 }
 
 void setup() {
+  Serial.begin(9600);
+  Serial.println("Bomb boot.");
+
   pinMode(BTN_PIN, INPUT_PULLUP);
   pinMode(RED_PIN, OUTPUT);
   pinMode(GRE_PIN, OUTPUT);
@@ -509,7 +513,7 @@ bool written = false;
 void easy_clue() {
   written = false;
   choices[0] = random(1, 2);
-  choices[1] = 2;
+  choices[1] = 1;
   choices[2] = random(1, 2);
   choices[3] = random(1, 2);
   choices[4] = random(1, 2);
@@ -623,23 +627,28 @@ void clues() {
 
   if (choices[1] == 1) {
     disableGreTask.update();
-    int Digit = int(passwordchar[1]) - '0';
+    int Digit = passwordchar[1];
     String temp = String(time.seco);
-    if (conversion1[Digit] == temp.charAt(temp.length() - 1)) {
+    char lastSecondDigit = temp.charAt(temp.length() - 1);
+    if (lastSecondDigit == '0') {
+      //Serial.print(Digit);
+    }
+    if (conversion1[Digit] == lastSecondDigit) {
+      //Serial.println("Choice check 2 passed!");
       if (global_pressed) {
-        lcd.setCursor(16, 1);
+        lcd.setCursor(15, 1);
         lcd.write(byte(7));
       } else {
-        lcd.setCursor(16, 1);
+        lcd.setCursor(15, 1);
         lcd.print(" ");
       }
     } else {
-      lcd.setCursor(16, 1);
+      lcd.setCursor(15, 1);
       lcd.print(" ");
     }
   } else {
     disableGreTask.update();
-    int Digit = int(passwordchar[1]) - '0';
+    int Digit = int(passwordchar[1]);
     String temp = String(time.seco);
     if (conversion2[Digit] == temp.charAt(temp.length() - 1)) {
       if (global_pressed) {
@@ -656,7 +665,9 @@ void clues() {
   }
 
   if (choices[2] == 1) { 
-
+    choices[2] = 3;
+    choices[3] = random(1, 9);
+    
   }
 }
 
@@ -667,16 +678,16 @@ void active_loop() {
 
   char key = keypad.getKey();
 
-  switch (selected_dif) {
-    case Easy:
+  switch (selected_dif) { 
+    case 0: // Din't looked like it worked with the name so I swicthed to numbers, hope It works :pray:
       easy_clue();
       break;
     
-    case Normal:
+    case 1:
       normal_clue();
       break;
 
-    case Hard:
+    case 2:
       hard_clue();
       break;
 

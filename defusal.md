@@ -37,7 +37,7 @@ Para obtela deverá prestar atenção nas instruções.
 * Segurando o botão e quando a led verde piscar ou um caracter diferente aparecer na segunda linha significa o ultimo caracter do segudo é uma parte da senha.
     * Se no multiplicador to timer for `0.00x` (lembrando que 0.00 é um exemplo) for `x`.
 
-| N° do segundo | N° da senha |
+| N° do senha | N° da segundo |
 |------|-------|
 | 0 | 0 |
 | 1 | 3 | 
@@ -52,7 +52,7 @@ Para obtela deverá prestar atenção nas instruções.
 
 * Se no multiplicador to timer for `0.00y` (lembrando que 0.00 é um exemplo) for `y`.
 
-| N° do segundo | N° da senha |
+| N° do senha | N° da segundo |
 |------|-------|
 | 0 | 0 |
 | 1 | 7 | 
@@ -64,3 +64,82 @@ Para obtela deverá prestar atenção nas instruções.
 | 7 | 9 |
 | 8 | 6 |
 | 9 | 3 | 
+
+3° Digito
+* Para obter o valor o digito após `0.00x --` sendo -- dois digitos, o primeiro é y, o segundo é k, assim para `f−1(y) = (y−k) mod 10`
+
+
+5° Digito
+* Quando não tem
+* Se amarelo estiver ligado a maioria do tempo e desligar em certo segunado este é X, se segurar o botão e a LED amarela ligar este é Y.
+Dada a fórmula que transforma um dígito \( d \in \{0, \dots, 9\} \) em dois dígitos \( x, y \in \{0, \dots, 9\} \):
+
+\[
+x = (d + a) \bmod 10
+\]
+\[
+y = (b \times d + c) \bmod 10
+\]
+
+onde \( a, b, c \in \{0, \dots, 9\} \) são constantes escolhidas, com a condição de que \( b \) seja invertível módulo 10 (ou seja, \( b \in \{1, 3, 7, 9\} \)).
+
+---
+
+### Passos para Recuperar \( d \) a partir de \( x \) e \( y \):
+
+1. **Isolar \( d \) usando \( x \):**
+
+\[
+d_x = (x - a) \bmod 10
+\]
+
+2. **Verificar se o valor encontrado confere com \( y \):**
+
+\[
+y \stackrel{?}{=} (b \times d_x + c) \bmod 10
+\]
+
+- Se for verdadeiro, então:
+
+\[
+d = d_x
+\]
+
+- Caso contrário, o par \((x, y)\) não corresponde a um valor válido de \( d \) com as constantes escolhidas.
+
+---
+
+### Exemplo Prático
+
+Se escolhermos:
+
+- \( a = 4 \)
+- \( b = 7 \) (que é invertível módulo 10)
+- \( c = 2 \)
+
+E recebemos \( x = 9 \) e \( y = 7 \):
+
+1. Calculamos:
+
+\[
+d_x = (9 - 4) \bmod 10 = 5
+\]
+
+2. Verificamos:
+
+\[
+(7 \times 5 + 2) \bmod 10 = (35 + 2) \bmod 10 = 37 \bmod 10 = 7
+\]
+
+Como confere com \( y \), concluímos que:
+
+\[
+d = 5
+\]
+
+---
+
+### Observações
+
+- É fundamental que \( b \) tenha inverso módulo 10 para garantir que a fórmula seja reversível.
+- A operação de módulo 10 garante que todos os valores fiquem dentro do intervalo \(0\) a \(9\).
