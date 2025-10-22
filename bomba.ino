@@ -207,6 +207,8 @@ enum bomb_state {
 
 enum bomb_state state = mode_selection;
 
+int digit3[] = {0, 0};
+
 const byte PINOS_LINHAS[LINHAS] = { 13, 12, 11, 10 };  // Pinos de conexao com as linhas do teclado
 const byte PINOS_COLUNAS[COLUNAS] = { 9, 8, 7, 6 };    // Pinos de conexao com as colunas do teclado
 
@@ -253,8 +255,9 @@ private:
     } else {
       lcd.print(String(minu) + ":" + secStr + "    " + String(speed, 2) + "x");
     }
-    lcd.setCursor(15,0);
-    lcd.print();
+    lcd.setCursor(14,0);
+    lcd.print(digit3[0]);
+    lcd.print(digit3[1]);
   }
 
   void tickent() {
@@ -666,8 +669,19 @@ void clues() {
 
   if (choices[2] == 1) { 
     choices[2] = 3;
-    choices[3] = random(1, 9);
-    
+    choices[3] = int(passwordchar[3]);
+    int result = (int(passwordchar[3])+int(passwordchar[4])) % 10;
+    String cokaine = String(result);
+    digit3[0] = cokaine.charAt(0);
+    digit3[1] = cokaine.charAt(1);
+  } else if (choices[2] == 3) {
+    // f−1(y) = (y−k) mod 10
+
+    if (!global_pressed) {
+      lcd.setCursor(15, 0);
+      lcd.print(digit3[0]);
+      lcd.print(digit3[1]);
+    }
   }
 }
 
