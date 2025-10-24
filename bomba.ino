@@ -257,8 +257,8 @@
       }
       lcd.setCursor(14,0);
       String help = String(digit3[0])+String(digit3[1]);
-      Serial.println(help);
-      //lcd.print(help);
+      //Serial.println(help);
+      lcd.print(help);
     }
 
     void tickent() {
@@ -675,14 +675,6 @@
         lcd.setCursor(16, 1);
         lcd.print(" ");
       }
-    }
-
-    if (choices[2] == 1) { 
-      
-    } else if (choices[2] == 3) {
-      // f−1(y) = (y−k) mod 10
-
-      
     }
   }
 
