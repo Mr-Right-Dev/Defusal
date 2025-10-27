@@ -67,5 +67,6 @@ Para obtela deverá prestar atenção nas instruções.
 
 4 e 3° Digito
 * Para obter o valor o digito após `0.00x --` sendo -- dois digitos que é X.
-    * Para obter o 3° fassa mod(X, 9) para obte-lo.
-    * Para obter o 4° fassa X/9 para obte-lo.
+    * Para obter o 3° fassa X/9 para obte-lo.
+    * Para obter o 4° fassa mod(X, 9) para obte-lo.
+    

@@ -185,6 +185,11 @@
     '3'
   };
 
+bool modeLoaded = false;
+int highscore_min = 0;
+int highscore_sec = 0;
+int highscore_raw = 600;
+
   const byte* numbers[] = {
     zero,
     one,
@@ -235,6 +240,16 @@
 
   int* choices[] = { 0, 0, 0, 0, 0 };
 
+void printArray(int arr[], int size) {
+  Serial.print("[");
+  for (int i = 0; i < size; i++) {
+    Serial.print(arr[i]);
+    if (i < size - 1) Serial.print(", ");
+  }
+  Serial.println("]");
+}
+
+
   class Timer {
   private:
     int last;
@@ -268,7 +283,8 @@
         seco = 59;
       }
       if (seco <= 0 && minu <= 0) {
-
+        state = exploded;
+        return;
       }
       display();
     }
@@ -335,15 +351,15 @@
   void generate_password() {
     password = "";
     for (int i = 0; i < 4; i++) {
-      int choice = random(0, 9);
+      int choice = random(0, 10);
       password += choice;
-      passwordchar[i] = choice;
+      passwordchar[i] = '0' + choice;
     }
     Serial.println(password);
     choices[2] = 3;
-      choices[3] = int(passwordchar[3]);
-      int a = int(passwordchar[3]);
-      int b = int(passwordchar[4]);
+      choices[3] = int(passwordchar[2]);
+      int a = abs(int(passwordchar[2]) - '0');
+      int b = abs(int(passwordchar[3]) - '0');
       int result = ((a * 9) + b);
       String cokaine = String(result);
       Serial.println(result);
@@ -353,6 +369,7 @@
 
   void reboot() {
     delay(100);
+    modeLoaded = false;
     lcd.backlight();
     lcd.clear();
     lcd.setCursor(0, 0);
@@ -360,11 +377,12 @@
     
     randomSeed(analogRead(0));
     time = Timer(3, 30);
+    state = mode_selection;
     selected_dif = Easy;
     digitalWrite(RED_PIN, LOW);
     digitalWrite(GRE_PIN, HIGH);
     digitalWrite(YEL_PIN, LOW);
-    delay(100);
+    delay(300);
     lcd.setCursor(0, 1);
     lcd.print("Facil");
   }
@@ -485,7 +503,26 @@
     delay(1000);
     tone(BUZ_PIN, 2300, 1000);
     lcd.print("Tenha um bom dia.");
-    delay(3000);
+    delay(2000);
+    int current = (timer.min * 60) + timer.sec;
+    if (highscore_raw < current) {
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("NOVO HIGHSCORE!");
+      tone(BUZ_PIN, 1000, 300);
+      delay(300);
+      tone(BUZ_PIN, 2000, 500);
+      delay(500);
+      lcd.clear();
+      lcd.print("Seu: "+timer.min+":"+timer.sec);
+      lcd.setCursor(1,0);
+      lcd.print("A: "+highscore_min+":"+highscore_sec);
+      highscore_raw = current;
+      highscore_min = timer.min;
+      highscore_sec = timer.sec;
+    } else {
+      
+    }
     reboot();
   }
 
@@ -525,29 +562,29 @@
 
   void easy_clue() {
     written = false;
-    choices[0] = random(1, 2);
+    choices[0] = random(1, 3);
     choices[1] = 1;
-    choices[2] = random(1, 2);
-    choices[3] = random(1, 2);
-    choices[4] = random(1, 2);
+    choices[2] = random(1, 3);
+    choices[3] = random(1, 3);
+    choices[4] = random(1, 3);
   }
 
   void normal_clue() {
     written = false;
-    choices[0] = random(1, 3);
-    choices[1] = random(1, 2);
-    choices[2] = random(1, 2);
-    choices[3] = random(1, 2);
-    choices[4] = random(1, 2);
+    choices[0] = random(1, 4);
+    choices[1] = random(1, 3);
+    choices[2] = random(1, 3);
+    choices[3] = random(1, 3);
+    choices[4] = random(1, 3);
   }
 
   void hard_clue() {
     written = false;
-    choices[0] = random(2, 3);
-    choices[1] = random(1, 2);
-    choices[2] = random(1, 2);
-    choices[3] = random(1, 2);
-    choices[4] = random(1, 2);
+    choices[0] = random(2, 4);
+    choices[1] = random(1, 3);
+    choices[2] = random(1, 3);
+    choices[3] = random(1, 3);
+    choices[4] = random(1, 3);
   }
 
   void disableRed() {
@@ -575,6 +612,7 @@
         }
       }
     } else if (choices[0] == 2) {
+      disableGreTask.
       if (global_pressed) {
         if (global_debounce) {
           lcd.setCursor(0, 0);
@@ -582,7 +620,7 @@
           lcd.setCursor(0, 0);
           lcd.write(byte(0));
 
-          int Digit = int(passwordchar[0]);  // Make sure is an INT >:(
+          int Digit = passwordchar[0] - '0';  // Make sure is an INT >:(
           int ecrypted = Digit * 10 * 0.5;
           char result[2];
           String encryptedTxt = String(ecrypted);
@@ -613,7 +651,7 @@
           lcd.setCursor(0, 0);
           lcd.write(byte(1));
 
-          int Digit = int(passwordchar[0]);  // Make sure is an INT >:(
+          int Digit = passwordchar[0] - '0';  // Make sure is an INT >:(
           int ecrypted = Digit * 10 * 2;
           char result[3];
           String encryptedTxt = String(ecrypted);
@@ -640,7 +678,7 @@
 
     if (choices[1] == 1) {
       disableGreTask.update();
-      int Digit = passwordchar[1];
+      int Digit = passwordchar[1] - '0';
       String temp = String(time.seco);
       char lastSecondDigit = temp.charAt(temp.length() - 1);
       if (lastSecondDigit == '0') {
@@ -650,6 +688,7 @@
         //Serial.println("Choice check 2 passed!");
         if (global_pressed) {
           lcd.setCursor(15, 1);
+          digitalWrite(GRE_PIN, HIGH);
           lcd.write(byte(7));
         } else {
           lcd.setCursor(15, 1);
@@ -667,6 +706,7 @@
         if (global_pressed) {
           lcd.setCursor(16, 1);
           lcd.write(byte(7));
+          digitalWrite(GRE_PIN, HIGH);
         } else {
           lcd.setCursor(16, 1);
           lcd.print(" ");
@@ -685,23 +725,29 @@
 
     char key = keypad.getKey();
 
-    switch (selected_dif) { 
-      case 0: // Din't looked like it worked with the name so I swicthed to numbers, hope It works :pray:
-        easy_clue();
-        break;
-      
-      case 1:
-        normal_clue();
-        break;
+    if (!modeLoaded) {
+      modeLoaded = true;
+      switch (selected_dif) { 
+        case 0: // Din't looked like it worked with the name so I swicthed to numbers, hope It works :pray:
+          easy_clue();
+          break;
+        
+        case 1:
+          normal_clue();
+          break;
 
-      case 2:
-        hard_clue();
-        break;
+        case 2:
+          hard_clue();
+          break;
 
-      default:
-        easy_clue();
-        break;
+        default:
+          easy_clue();
+          break;
+      }
     }
+
+    
+    //printArray(choices, 4);
 
     if (!key) {
       return;
@@ -734,7 +780,17 @@
     lcd.print(inputed_password);
   }
 
+void explode() {
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("CABOOM!");
+  tone(BUZ_PIN, 3000, 1000);
+  delay(1000);
+  reboot();
+}
+
   void loop() {
     if (state == mode_selection) { select_loop(); }
     if (state == active) { active_loop(); }
+    if (state == exploded) { explode(); }
   }
