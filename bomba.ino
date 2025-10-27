@@ -186,9 +186,9 @@
   };
 
 bool modeLoaded = false;
-int highscore_min = 0;
-int highscore_sec = 0;
-int highscore_raw = 600;
+int highscore_min[3] = {0,0,0};
+int highscore_sec[3] = {0,0,0};
+int highscore_raw[3] = {0,0,0};
 
   const byte* numbers[] = {
     zero,
@@ -370,11 +370,10 @@ void printArray(int arr[], int size) {
   void reboot() {
     delay(100);
     modeLoaded = false;
-    lcd.backlight();
+    //lcd.backlight();
     lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("Dificuldade: ");
     
+
     randomSeed(analogRead(0));
     time = Timer(3, 30);
     state = mode_selection;
@@ -382,7 +381,9 @@ void printArray(int arr[], int size) {
     digitalWrite(RED_PIN, LOW);
     digitalWrite(GRE_PIN, HIGH);
     digitalWrite(YEL_PIN, LOW);
-    delay(300);
+    delay(1000);
+    lcd.setCursor(0, 0);
+    lcd.print("Dificuldade: ");
     lcd.setCursor(0, 1);
     lcd.print("Facil");
   }
@@ -504,8 +505,9 @@ void printArray(int arr[], int size) {
     tone(BUZ_PIN, 2300, 1000);
     lcd.print("Tenha um bom dia.");
     delay(2000);
-    int current = (timer.min * 60) + timer.sec;
-    if (highscore_raw < current) {
+    int current = (time.minu * 60) + time.seco;
+    int dif = static_cast<int>(selected_dif);
+    if (highscore_raw[dif] < current) {
       lcd.clear();
       lcd.setCursor(0,0);
       lcd.print("NOVO HIGHSCORE!");
@@ -514,15 +516,21 @@ void printArray(int arr[], int size) {
       tone(BUZ_PIN, 2000, 500);
       delay(500);
       lcd.clear();
-      lcd.print("Seu: "+timer.min+":"+timer.sec);
-      lcd.setCursor(1,0);
-      lcd.print("A: "+highscore_min+":"+highscore_sec);
-      highscore_raw = current;
-      highscore_min = timer.min;
-      highscore_sec = timer.sec;
+      lcd.setCursor(0,0);
+lcd.print("Seu: " + String(time.minu) + ":" + String(time.seco));
+lcd.setCursor(0,1);
+lcd.print("A: " + String(highscore_min[dif]) + ":" + String(highscore_sec[dif]));
+      highscore_raw[dif] = current;
+      highscore_min[dif] = time.minu;
+      highscore_sec[dif] = time.seco;
     } else {
-      
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("HIGHSCORE:");
+      lcd.setCursor(0,1);
+      lcd.print(String(highscore_min[dif]) + ":" + String(highscore_sec[dif]));
     }
+    delay(5000);
     reboot();
   }
 
@@ -612,7 +620,7 @@ void printArray(int arr[], int size) {
         }
       }
     } else if (choices[0] == 2) {
-      disableGreTask.
+      disableGreTask.update();
       if (global_pressed) {
         if (global_debounce) {
           lcd.setCursor(0, 0);
