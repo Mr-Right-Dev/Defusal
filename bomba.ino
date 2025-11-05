@@ -434,6 +434,8 @@ void printArray(int arr[], int size) {
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print("Carregando...");
+      lcd.setCursor(0, 1);
+      lcd.print("A gerar cod.");
       digitalWrite(RED_PIN, HIGH);
       digitalWrite(GRE_PIN, HIGH);
       digitalWrite(YEL_PIN, HIGH);
@@ -443,6 +445,7 @@ void printArray(int arr[], int size) {
       digitalWrite(RED_PIN, LOW);
       digitalWrite(GRE_PIN, LOW);
       digitalWrite(YEL_PIN, LOW);
+      lcd.clear();
       global_debounce = false;
       return;
     }
