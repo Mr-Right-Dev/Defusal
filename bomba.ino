@@ -372,7 +372,7 @@ void printArray(int arr[], int size) {
     //lcd.backlight();
     lcd.clear();
     
-
+    inputed_password = "";
     randomSeed(analogRead(0));
     time = Timer(8, 30);
     state = mode_selection;
