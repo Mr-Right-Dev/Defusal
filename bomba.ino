@@ -282,7 +282,7 @@ void printArray(int arr[], int size) {
         minu -= 1;
         seco = 59;
       }
-      if (seco <= 0 && minu <= 0) {
+      if (minu < 0) {
         state = exploded;
         return;
       }
@@ -368,20 +368,18 @@ void printArray(int arr[], int size) {
   }
 
   void reboot() {
-    delay(100);
     modeLoaded = false;
     //lcd.backlight();
     lcd.clear();
     
 
     randomSeed(analogRead(0));
-    time = Timer(3, 30);
+    time = Timer(8, 30);
     state = mode_selection;
     selected_dif = Easy;
     digitalWrite(RED_PIN, LOW);
     digitalWrite(GRE_PIN, HIGH);
     digitalWrite(YEL_PIN, LOW);
-    delay(1000);
     lcd.setCursor(0, 0);
     lcd.print("Dificuldade: ");
     lcd.setCursor(0, 1);
@@ -425,7 +423,7 @@ void printArray(int arr[], int size) {
     lcd.setCursor(0, 1);
     lcd.print("Facil");
     randomSeed(analogRead(0));
-    time = Timer(3, 30);
+    time = Timer(8, 30);
   }
 
   void select_loop() {
@@ -470,7 +468,7 @@ void printArray(int arr[], int size) {
       digitalWrite(RED_PIN, LOW);
       digitalWrite(GRE_PIN, LOW);
       digitalWrite(YEL_PIN, HIGH);
-      time = Timer(2, 30);
+      time = Timer(5, 30);
       selected_dif = Normal;
       lcd.print("Normal");
 
@@ -478,7 +476,7 @@ void printArray(int arr[], int size) {
       digitalWrite(RED_PIN, HIGH);
       digitalWrite(GRE_PIN, LOW);
       digitalWrite(YEL_PIN, LOW);
-      time = Timer(1, 30);
+      time = Timer(3, 30);
       lcd.print("Dificil");
       selected_dif = Hard;
 
@@ -488,7 +486,7 @@ void printArray(int arr[], int size) {
       digitalWrite(GRE_PIN, HIGH);
       digitalWrite(YEL_PIN, LOW);
       lcd.print("Facil");
-      time = Timer(3, 30);
+      time = Timer(8, 30);
     }
 
     delay(200);
@@ -548,7 +546,7 @@ lcd.print("A: " + String(highscore_min[dif]) + ":" + String(highscore_sec[dif]))
     lcd.print("Code");
     tone(BUZ_PIN, 3000, 500);
     delay(1000);
-    state = mode_selection;
+    //state = mode_selection;
     reboot();
   }
 
@@ -769,9 +767,9 @@ lcd.print("A: " + String(highscore_min[dif]) + ":" + String(highscore_sec[dif]))
       inputed_password.remove(inputed_password.length() - 1);
     } else if (key == '#') {
       if (inputed_password == password) {
-        succes();
+        return succes();
       } else if (inputed_password == master_password) {
-        admin_bypass();
+        return admin_bypass();
       } else {
         fail();
       }
@@ -798,7 +796,7 @@ void explode() {
 }
 
   void loop() {
-    if (state == mode_selection) { select_loop(); }
-    if (state == active) { active_loop(); }
-    if (state == exploded) { explode(); }
+    if (state == mode_selection) { return select_loop(); } // The return if for no execute the other stuff in the same loop.
+    if (state == active) { return active_loop(); }
+    if (state == exploded) { return explode(); }
   }
