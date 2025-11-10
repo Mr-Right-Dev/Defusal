@@ -615,7 +615,7 @@ lcd.print("A: " + String(highscore_min[dif]) + ":" + String(highscore_sec[dif]))
       if (!global_pressed) {
         disableRedTask.update();
         String temp = String(time.seco);
-        if (temp.charAt(temp.length() - 1) == password.charAt(0)) {
+        if (temp.charAt(temp.length() - 1) == passwordchar[0]) {
           digitalWrite(RED_PIN, HIGH);
           disableRedTask.enable();
         }
