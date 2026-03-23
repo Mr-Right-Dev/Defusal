@@ -1,3 +1,6 @@
+>[!NOTE]
+>Este projeto tem algums problemas **E** não esta sendo mais suportado.
+
 # Defusal
 Este é um projeto sobre dearmar bomba(s), onde uma senha de 4 á 5 digitis é aleatoriamente gerada. 
 Para obter a senha correta o usuário deverar seguir o manual para desarmala onde os desafios são aleatórios.
